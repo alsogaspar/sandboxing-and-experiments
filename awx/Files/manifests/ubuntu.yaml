@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ubuntu
+  name: ubuntu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+        - image: ubuntu:latest
+          name: ubuntu
+          command: ["/bin/sh", "-c"]
+          args: 
+          - |
+            apt update && \
+            apt install -y ssh python3-apt && \ 
+            exec /sbin/init 
+#            & /bin/sh /bin/systemctl start ssh && \
+#            sleep 365d
+          imagePullPolicy: IfNotPresent
+          securityContext:
+                privileged: true
+          ports:
+            - containerPort: 22
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /root/.ssh/authorized_keys
+              subPath: ssh-key.pub
+              name: ssh-keys
+            - name: sys-fs-cgroup
+              mountPath: /sys/fs/cgroup
+              readOnly: true
+      volumes:
+        - configMap:
+            defaultMode: 0400
+            name: ssh-keys
+          name: ssh-keys
+        - name: sys-fs-cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory

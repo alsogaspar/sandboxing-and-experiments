@@ -1,0 +1,16 @@
+---
+- name: nginx_start_ubuntu
+  service:
+    name: nginx
+    state:
+      - reloaded
+      - started
+    enabled: true
+
+- name: nginx_start_rh
+  systemd_service:
+    name: nginx
+    state: 
+      - reloaded
+      - started
+    enabled: true

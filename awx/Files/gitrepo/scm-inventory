@@ -1,0 +1,5 @@
+[ubuntu]
+ubuntu-service.awx.svc.cluster.local
+
+[redhat]
+redhat-service.awx.svc.cluster.local

@@ -1,0 +1,36 @@
+---
+- name: Move index.html file (Ubuntu based)
+  copy:
+    src: ./files/index.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+  changed_when: True
+  #notify: nginx_start_ubuntu
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Move index.html file (RH based)
+  copy:
+    src: ./files/index.html
+    dest: /usr/share/nginx/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+  changed_when: True
+  #notify: nginx_start_rh
+  when: "ansible_distribution == 'RedHat'"
+
+#- name: nginx_start_ubuntu
+#  service:
+#    name: nginx
+#    state: started
+#    enabled: true
+#  when: "ansible_distribution == 'Ubuntu'"
+
+- name: nginx_start
+  systemd_service:
+    name: nginx
+    state: started
+    enabled: true
+#  when: "ansible_distribution == 'RedHat'"

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redhat
+  name: redhat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redhat
+  template:
+    metadata:
+      labels:
+        app: redhat
+    spec:
+      containers:
+        - image: redhat/ubi9
+          name: redhat
+          command: ["/bin/bash", "-c"]
+          args:          
+          - |
+              update-ca-trust && \
+              dnf update -y && \
+              dnf install -y openssh-server && \
+              exec /sbin/init
+          imagePullPolicy: IfNotPresent
+          securityContext:
+                privileged: true
+          ports:
+            - containerPort: 22
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /root/.ssh/authorized_keys
+              subPath: ssh-key.pub
+              name: ssh-keys
+            - mountPath: /etc/pki/ca-trust/source/anchors/zscaler.pem
+              subPath: ZScaler.pem
+              name: zscaler
+            - name: sys-fs-cgroup
+              mountPath: /sys/fs/cgroup
+              readOnly: true
+
+      volumes:
+        - configMap:
+            defaultMode: 0400
+            name: ssh-keys
+          name: ssh-keys
+        - configMap:
+            defaultMode: 0400
+            name: zscaler
+          name: zscaler
+        - name: sys-fs-cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: Directory

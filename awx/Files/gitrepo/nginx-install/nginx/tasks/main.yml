@@ -1,0 +1,28 @@
+---
+- name: Get package facts
+  package_facts:
+    manager: auto
+
+- name: Check if nginx is installed
+  debug:
+    msg: "{{ ansible_facts.packages['nginx'] | length }} versions of nginx are installed!"
+  when: "'nginx' in ansible_facts.packages"
+
+- name: Install nginx block 
+  import_tasks: install.yml  
+  when: "'nginx' not in ansible_facts.packages"
+
+- name: Get package facts
+  package_facts:
+    manager: auto
+
+- name: Move files block
+  import_tasks: move_files.yml  
+  when: "'nginx' in ansible_facts.packages"
+
+- name: Check the site
+  uri:
+    url: 'http://{{ ansible_host }}'
+    method: GET
+  when: "'nginx' in ansible_facts.packages"
+  

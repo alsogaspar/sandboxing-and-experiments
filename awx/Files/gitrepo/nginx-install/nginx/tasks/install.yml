@@ -1,0 +1,17 @@
+---
+- name: Install nginx and curl if not present (Ubuntu based)
+  apt:
+    state: present
+    name:
+    - nginx
+    - curl
+  when: "ansible_distribution == 'Ubuntu'"
+
+- name: Install nginx curl if not present (RH based)
+  dnf:
+    state: present
+    skip_broken: true
+    name:
+    - nginx
+    - curl
+  when: "ansible_distribution == 'RedHat'"

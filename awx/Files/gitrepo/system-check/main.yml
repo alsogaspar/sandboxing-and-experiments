@@ -1,0 +1,61 @@
+---
+- name: Check system information
+  gather_facts: true
+  hosts: "{{ machine }}"
+  become: yes
+  tasks:
+    - name: System details
+      debug: 
+        msg: >
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_distribution_release }} ({{ ansible_distribution_file_path }})
+      when: "'OS' in info_opts"
+
+    - name: Kernel details
+      debug: 
+        msg: >
+          Kernel version: {{ ansible_kernel }}
+      when: "'Kernel' in info_opts"
+
+    - name: IPv4 Address
+      ignore_errors: true
+      debug: 
+        msg: >
+          IPv4: {{ ansible_all_ipv4_addresses }}
+          IPv6: {{ ansible_all_ipv6_addresses }}
+      when: "'IPv4' in info_opts"
+      
+    - name: Memory details
+      debug: 
+        msg: >
+          RAM (used/total): {{ ansible_memory_mb.real.used }} {{ ansible_memory_mb.real.total }}
+      when: "'Memory' in info_opts"
+
+    - name: Processor details
+      debug: 
+        msg: >
+          CPU(s): ({{ ansible_processor_cores }} cores, {{ ansible_architecture }}) 
+          {{ ansible_processor }}
+      when: "'Processor' in info_opts"
+
+    - name: Volume mounts detail
+      debug: 
+        msg: >
+          Volumes: {{ ansible_mounts }}
+      when: "'Volumes' in info_opts"
+
+    - name: Virtualization details
+      debug: 
+        msg: >
+          Virtualization: 
+            - Role: {{ ansible_virtualization_role }} 
+            - Type: {{ ansible_virtualization_type }}
+      when: "'Virtualization' in info_opts"
+
+    - name: Other info
+      debug: 
+        msg: >
+          Other info: 
+            - Package Manager: {{ ansible_pkg_mgr }} 
+            - NodeName: {{ ansible_nodename }} ({{ ansible_os_family }})
+            - BIOS: v{{ ansible_bios_version }} ({{ansible_bios_date}})
+      when: "'Extras' in info_opts"
