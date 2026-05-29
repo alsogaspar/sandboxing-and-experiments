@@ -72,13 +72,13 @@ apt install ansible-core
 
 1. Access AWX with the URL that Minikube provided
 	- If it expired, use the following command:
-	```sh
+```sh
 minikube service awx-service -n awx --url &
-	```
+```
 	- If you didn't save the password, use the following command:
-	```sh
+```sh
 kubectl get secret awx-admin-password -n ${NAMESPACE} -o jsonpath="{.data.password}" | base64 --decode; echo
-	```
+```
 
 2. Add a new Credential for GitHub (*Resources > Credentials > Add*)
 	- **Name**: GH-Token
